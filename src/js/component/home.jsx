@@ -5,8 +5,6 @@ const Home = () => {
     const [todos, setTodos] = useState([]) 
     const [newTodo, setNewTodo] = useState("") 
 
-
-    
     function postTodo() {
         let nuevaTarea = {
             label: newTodo,
@@ -50,8 +48,21 @@ const Home = () => {
             .catch((error) => console.error(error));
     }
 
+    function deleteAllTodos() {
+        setTodos([]);
+        fetch(`https://playground.4geeks.com/todo/users/Garx1212`, {
+            method: "DELETE",
+        })
+            .then((respuesta) => {
+                if (respuesta.status == 204) {
+                    setTodos([]);
+                } else {
+                    console.error("Error al eliminar todas las tareas");
+                }
+            })
+            .catch((error) => console.error(error));
+    }
 
-    
     function getTodo() {
         let listaTareas = {
             label: newTodo,
@@ -61,7 +72,6 @@ const Home = () => {
         console.log(typeof (listaTareas))
         fetch("https://playground.4geeks.com/todo/users/Garx1212", {
             method: "GET"
-
 
         })
             .then((respuesta) => {
@@ -74,11 +84,9 @@ const Home = () => {
             .catch((error) => {
                 return error;
             }
-
             )
     }
 
-    
     function putTodo() {
         let listaTareas = {
             label: newTodo,
@@ -106,7 +114,6 @@ const Home = () => {
             .catch((error) => {
                 return error;
             }
-
             )
     }
 
@@ -116,41 +123,41 @@ const Home = () => {
         []
     )
 
-
-    
     return (
         <div className="text-center container m-5">
 
-    <h1 className="text-danger fw-light">Todos</h1>
+        <h1 className="text-danger fw-light">Todos</h1>
 
-    <input className="form-control" placeholder="What needs to be done?"
-        value={newTodo}
-        onChange={(e) => {
-            setNewTodo(e.target.value);
-        }}
-        onKeyDown={(e) => {
-            if (e.key === "Enter" && newTodo.trim()) {
-                postTodo();  
-                setNewTodo("");
+        <input className="form-control" placeholder="What needs to be done?"
+            value={newTodo}
+            onChange={(e) => {
+                setNewTodo(e.target.value);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" && newTodo.trim()) {
+                    postTodo();  
+                    setNewTodo("");
+                }
+            }}
+        />
+
+        <ul className="list-group">
+            {todos.length > 0 ? todos.map((item, index) => {
+                return (
+                    <li key={index} className="list-group-item d-flex justify-content-between item-task">
+                        {item.label}
+                        <button className="btn btn-danger delete-button" onClick={() => deleteTodo(item.id)}>X</button>
+                    </li>
+                )
+            }) :
+                <li className="list-group-item">No hay tareas</li>
             }
-        }}
-    />
+            <li className="list-group-item d-flex justify-content-start text-black-50">{todos.length} Item left</li>
+        </ul>
 
-    <ul className="list-group">
-        {todos.length > 0 ? todos.map((item, index) => {
-            return (
-                <li key={index} className="list-group-item d-flex justify-content-between item-task">
-                    {item.label}
-                    <button className="delete-button btn btn-danger" onClick={() => deleteTodo(item.id)}>X</button>
-                </li>
-            )
-        }) :
-            <li className="list-group-item">No hay tareas</li>
-        }
-        <li className="list-group-item d-flex justify-content-start text-black-50">{todos.length} Item left</li>
-    </ul>
+        <button className="btn btn-danger mt-3" onClick={deleteAllTodos}>Eliminar todas las tareas</button>
 
-</div>
+    </div>
     );
 };
 
