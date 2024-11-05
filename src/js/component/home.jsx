@@ -1,114 +1,158 @@
-import React, { useEffect, useState } from "react";
-
-
-
-const endpoint = "https://playground.4geeks.com/todo/users/Garx1212";
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
-  const [tasksData, setTasksData] = useState([]);
-  const [myNewTask, setMyNewTask] = useState("");
-
-  
-  const getTasks = async () => {
-    try {
-      const response = await fetch(endpoint);
-      const tasks = await response.json();
-      if (Array.isArray(tasks)) {
-        setTasksData(tasks);
-      } else {
-        setTasksData([]);
-        
-      }
-    } catch (error) {
-      console.error("ERROR: The task is not admitted", error);
-      setTasksData([]);
-    }
-  };
+	
+	const [todos, setTodos] = useState([]) 
+	const [newTodo, setNewTodo] = useState("") 
 
 
-  const updateTasksOnServer = async (tasks) => {
-    try {
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(tasks),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      getTasks();
-    } catch (error) {
-      console.error("ERROR: Failed to update tasks on server", error);
-    }
-  };
+	
+	function postTodo() {
+		let nuevaTarea = {
+			label: newTodo,
+			is_done: false
+		}
+		console.log(nuevaTarea)
+		console.log(typeof (nuevaTarea))
+		fetch("https://playground.4geeks.com/todo/todos/Garx1212", {
+			method: "POST",
 
-  
-  const handleClick = async (e) => {
-    e.preventDefault();
-    const updatedTasks = [...tasksData, { done: false, label: myNewTask }];
-    updateTasksOnServer(updatedTasks);
-    setMyNewTask(""); 
-  };
+			headers: {
+				"content-Type": "application/json"
+			},
+			body: JSON.stringify(nuevaTarea),
+		})
+			.then((respuesta) => {
+				return respuesta.json();
+			})
+			.then((data) => {
+				console.log(data); 
+				getTodo()
+			})
+			.catch((error) => {
+				return error
+			})
+	}
 
-  
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setMyNewTask(value);
-  };
 
- 
-  const removeTask = async (index) => {
-    const updatedTasks = tasksData.filter((_, i) => i !== index);
-    updateTasksOnServer(updatedTasks);
-  };
+	function deleteTodo(id) {
+		fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+			method: "DELETE",
+		})
+			.then((respuesta) => {
+				if (respuesta.status == 204) {
+					getTodo()
 
- 
-  const clearTasks = async () => {
-    updateTasksOnServer([]);
-  };
+				} else {
+					console.error("Error al eliminar la tarea");
+				}
+			})
+			.catch((error) => console.error(error));
+	}
 
- 
-  useEffect(() => {
-    getTasks();
-  }, []);
 
-  return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="bg-white p-4 rounded shadow-sm" style={{ width: "300px" }}>
-        <form onSubmit={handleClick}>
-          <h1 className="text-center text-muted mb-4">Todos</h1>
-          <div className="form-group mb-3">
-            <label>Enter your task</label>
-            <div className="d-flex">
-              <input
-                type="text"
-                className="form-control me-2"
-                onChange={handleChange}
-                value={myNewTask}
-              />
-              <button type="submit" className="btn btn-success">
-                <i className="fa fa-pencil"></i>
-              </button>
-            </div>
-          </div>
-        </form>
-        <button className="btn btn-danger mb-3" onClick={clearTasks}>Clear All Tasks</button>
-        <ul className="list-group">
-          {tasksData.map((task, index) => (
-            <li className="list-group-item d-flex justify-content-between align-items-center" key={index}>
-              {task.label}
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => removeTask(index)}
-              >
-                X
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
+	
+	function getTodo() {
+		let listaTareas = {
+			label: newTodo,
+			isDone: false
+		}
+		console.log(listaTareas)
+		console.log(typeof (listaTareas))
+		fetch("https://playground.4geeks.com/todo/users/Garx1212", {
+			method: "GET"
+
+
+		})
+			.then((respuesta) => {
+				return respuesta.json()
+			})
+			.then((data) => {
+				console.log(data);
+				setTodos(data.todos || []);
+			})
+			.catch((error) => {
+				return error;
+			}
+
+			)
+	}
+
+	
+	function putTodo() {
+		let listaTareas = {
+			label: newTodo,
+			isDone: false
+		}
+		console.log(listaTareas)
+		console.log(typeof (listaTareas))
+		fetch("", {
+			method: "PUT",
+			body: JOSN.stringify(),
+			headers: {
+				"Content-Type": "aplication/json"
+			}
+
+		})
+			.then((respuesta) => {
+				console.log(respuesta.ok); 
+				console.log(respuesta.status); 
+				console.log(respuesta.text); 
+				return respuesta.json();  
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((error) => {
+				return error;
+			}
+
+			)
+	}
+
+	useEffect(() => {
+		getTodo()
+	},
+		[]
+	)
+
+
+	
+	return (
+		<div className="text-center container m-5">
+
+    <h1 className="text-danger fw-light">Todos</h1>
+
+    <input className="form-control" placeholder="What needs to be done?"
+        value={newTodo}
+        onChange={(e) => {
+            setNewTodo(e.target.value);
+        }}
+        onKeyDown={(e) => {
+            if (e.key === "Enter" && newTodo.trim()) {
+                postTodo();  
+                setNewTodo("");
+            }
+        }}
+    />
+
+    <ul className="list-group">
+        {todos.length > 0 ? todos.map((item, index) => {
+            return (
+                <li key={index} className="list-group-item d-flex justify-content-between">
+                    {item.label}
+                    <button className="btn btn-danger ms-auto delete" onClick={() => deleteTodo(item.id)}>X</button>
+                </li>
+            )
+        }) :
+            <li className="list-group-item">No hay tareas</li>
+        }
+        <li className="list-group-item d-flex justify-content-start text-black-50">{todos.length} Item left</li>
+    </ul>
+
+</div>
+
+	);
 };
 
 export default Home;
