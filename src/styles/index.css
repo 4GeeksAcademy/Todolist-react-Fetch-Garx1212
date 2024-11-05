@@ -32,13 +32,20 @@
         align-items: center;
         padding: 10px 0;
         border-bottom: 1px solid #eee;
+        position: relative;
     }
     li:last-child {
         border-bottom: none;
     }
-    .delete {
-        color: rgb(167, 167, 167);
+    .delete-button {
+        color: red;
         cursor: pointer;
+        display: none;
+        position: absolute;
+        right: 10px;
+    }
+    li:hover .delete-button {
+        display: inline;
     }
     .footer {
         text-align: center;
