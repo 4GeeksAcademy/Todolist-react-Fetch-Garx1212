@@ -45,6 +45,21 @@ const Home = () => {
             .catch((error) => console.error(error));
     }
 
+    function deleteUser() {
+        fetch("https://playground.4geeks.com/todo/users/Garx1212", {
+            method: "DELETE",
+        })
+            .then((respuesta) => {
+                if (respuesta.status === 204) {
+                    console.log("Usuario eliminado");
+                    createUser();
+                } else {
+                    console.error("Error al eliminar el usuario");
+                }
+            })
+            .catch((error) => console.error(error));
+    }
+
     function createUser() {
         let user = {
             todos: []
@@ -120,9 +135,10 @@ const Home = () => {
                 )}
                 <li className="list-group-item d-flex justify-content-start text-black-50">{todos.length} Item left</li>
             </ul>
-            <button className="btn btn-danger mt-3" onClick={() => setTodos([])}>Eliminar todas las tareas</button>
+            <button className="btn btn-danger mt-3" onClick={deleteUser}>Eliminar todas las tareas</button>
         </div>
     );
 };
 
 export default Home;
+
